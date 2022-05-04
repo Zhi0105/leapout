@@ -1,4 +1,6 @@
 import React, {useState} from 'react'
+import Modal from 'react-modal';
+
 
 const Board = () => {
 
@@ -7,6 +9,8 @@ const Board = () => {
     const [draw, setDraw] = useState(0);
     const [turnOver, setTurnOver] = useState('Player');
     const [isDraw, setIsDraw] = useState(true);
+    const [announce, setAnnounce] = useState('');
+    const [modalIsOpen, setIsOpen] = React.useState(false);
 
     const [box, setBox] = useState([
         {   id : 1, value : ''},
@@ -84,16 +88,69 @@ const Board = () => {
         }
     }
 
+    // HANDLE SCORE
     const handleScore = (winner) => {
-        if(winner === 'Player'){ setPlayerScore(playerScore + 1) }
-        if(winner === 'AI'){ setAIScore(AIScore + 1) }
-        if(winner === 'Draw'){ setDraw(draw + 1) }
+        if(winner === 'Player'){ setPlayerScore(playerScore + 1);
+            setAnnounce('Player win');
+            openModal() 
+        }
+        if(winner === 'AI'){ setAIScore(AIScore + 1);
+            setAnnounce('AI win');
+            openModal() 
+        }
+        if(winner === 'Draw'){ setDraw(draw + 1);
+            setAnnounce('Draw game');
+            openModal() 
+        }
+        
         
     }
 
+    // HANDLE RESET
+    const handleReset = () => {
+        setPlayerScore(0)
+        setAIScore(0)
+        setDraw(0)
+
+        for(let i=0 ; i<= box.length; i++){
+            document.getElementById(box[i].id).value = ''
+            document.getElementById(box[i].id).style.backgroundColor = 'white'
+            document.getElementById(box[i].id).disabled = false
+        }
+    }
+
+    const handleRestart = () => {
+        for(let i=0 ; i<= box.length; i++){
+            document.getElementById(box[i].id).value = ''
+            document.getElementById(box[i].id).style.backgroundColor = 'white'
+            document.getElementById(box[i].id).disabled = false
+        }
+    }
+    
+        const customStyles = {
+            content: {
+                top: '50%',
+                left: '50%',
+                right: 'auto',
+                bottom: 'auto',
+                marginRight: '-50%',
+                transform: 'translate(-50%, -50%)',
+            },
+        };
+
+            function openModal() {
+                setIsOpen(true);
+            }
+            
+            function closeModal() {
+                setIsOpen(false);
+                handleRestart()
+            }
+            
+
     return (
         
-    <div className="h-screen bg-slate-600 text-white flex flex-col gap-4 place-items-center justify-center">
+    <div className="min-h-screen p-4 bg-slate-600 text-white flex flex-col gap-4 place-items-center justify-center">
             <div className='Scoring flex gap-8 text-2xl font-bold'>
                 <div><label>Player : </label><span>{playerScore}</span></div>
                 <div><label>AI : </label><span>{AIScore}</span></div>
@@ -113,6 +170,46 @@ const Board = () => {
                     })
                 }
             </div>
+
+            <div className='buttons flex gap-4 cursor-pointer'>
+                <div className="relative px-10 py-3 overflow-hidden font-medium text-gray-600 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group" onClick={handleRestart}>
+                    <span className="absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-gray-600 group-hover:w-full ease"></span>
+                    <span className="absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-gray-600 group-hover:w-full ease"></span>
+                    <span className="absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                    <span className="absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                    <span className="absolute inset-0 w-full h-full duration-300 delay-300 bg-gray-900 opacity-0 group-hover:opacity-100"></span>
+                    <span className="relative transition-colors duration-300 delay-200 group-hover:text-white ease">Restart</span>
+                </div>
+
+                <div className="relative px-10 py-3 overflow-hidden font-medium text-gray-600 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group" onClick={handleReset}>
+                    <span className="absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-gray-600 group-hover:w-full ease"></span>
+                    <span className="absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-gray-600 group-hover:w-full ease"></span>
+                    <span className="absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                    <span className="absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                    <span className="absolute inset-0 w-full h-full duration-300 delay-300 bg-gray-900 opacity-0 group-hover:opacity-100"></span>
+                    <span className="relative transition-colors duration-300 delay-200 group-hover:text-white ease">Reset</span>
+                </div>
+            </div>
+
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                style={customStyles}
+                contentLabel="Example Modal"
+            >
+            <div className='container flex flex-col gap-4 place-items-center justify-center'>
+                    <h2 className='text-green-600 font-bold text-xl text-center'>{announce}</h2>
+                    <div className="relative px-10 py-3 overflow-hidden font-medium text-gray-600 bg-gray-100 border border-gray-100 rounded-lg shadow-inner group" onClick={closeModal}>
+                        <span className="absolute top-0 left-0 w-0 h-0 transition-all duration-200 border-t-2 border-gray-600 group-hover:w-full ease"></span>
+                        <span className="absolute bottom-0 right-0 w-0 h-0 transition-all duration-200 border-b-2 border-gray-600 group-hover:w-full ease"></span>
+                        <span className="absolute top-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                        <span className="absolute bottom-0 left-0 w-full h-0 transition-all duration-300 delay-200 bg-gray-600 group-hover:h-full ease"></span>
+                        <span className="absolute inset-0 w-full h-full duration-300 delay-300 bg-gray-900 opacity-0 group-hover:opacity-100"></span>
+                        <span className="relative transition-colors duration-300 delay-200 group-hover:text-white ease">New game</span>
+                    </div>
+            </div>
+
+            </Modal>
     </div>
     )
 }
