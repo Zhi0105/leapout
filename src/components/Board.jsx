@@ -111,20 +111,23 @@ const Board = () => {
         setPlayerScore(0)
         setAIScore(0)
         setDraw(0)
+        
+        setBox([...box].map((val) => {
+            val.value = ''
+            document.getElementById(val.id).style.backgroundColor = 'white'
+            document.getElementById(val.id).disabled = false    
+            return val
+        }))
 
-        for(let i=0 ; i<= box.length; i++){
-            document.getElementById(box[i].id).value = ''
-            document.getElementById(box[i].id).style.backgroundColor = 'white'
-            document.getElementById(box[i].id).disabled = false
-        }
     }
 
     const handleRestart = () => {
-        for(let i=0 ; i<= box.length; i++){
-            document.getElementById(box[i].id).value = ''
-            document.getElementById(box[i].id).style.backgroundColor = 'white'
-            document.getElementById(box[i].id).disabled = false
-        }
+        setBox([...box].map((val) => {
+            val.value = ''
+            document.getElementById(val.id).style.backgroundColor = 'white'
+            document.getElementById(val.id).disabled = false    
+            return val
+        }))
     }
     
         const customStyles = {
@@ -161,11 +164,14 @@ const Board = () => {
                     <span className="text-xl">{`${turnOver}'s Turn`}</span>
                 </div>
             </div>
-            <div className='w-2/5 board-container gap-4 grid grid-cols-4 bg-black p-4 m-4'>
+            <div className='w-2/5 lg:w-2/5 md:w-1/2 sm:w-full custom:w-full board-container gap-4 grid grid-cols-4 bg-black p-4 m-4'>
                     {
                     box.map((e) => {
                         return(
-                            <input key={e.id} id={e.id? e.id : ''} className='text-black text-center py-8 cursor-pointer block  max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700' type="text" onClick={handleBoxValue} />
+                            <input key={e.id} id={e.id? e.id : ''} className='text-black text-center py-8 cursor-pointer block  max-w-sm bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'
+                            onChange={() => setBox([...box].map(i => { return i.value}))}
+                            value={e.value}
+                            type="text" onClick={handleBoxValue} />
                         )
                     })
                 }
